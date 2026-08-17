@@ -1,0 +1,563 @@
+:root {
+    /* ========================================== */
+    /* LOGO BRAND COLORS (From Your Logo)        */
+    /* ========================================== */
+
+    /* Background Colors - Clean & Light */
+    --bg-body: #f0f2f8;
+    --bg-white: #ffffff;
+    --bg-light: #f8f9fc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f5f7ff;
+    --bg-input: #f8f9fc;
+
+    /* Brand Blues (From Logo) */
+    --deep-navy: #0E1A3A;
+    --royal-blue: #1A4B8C;
+    --bright-azure: #2B7FCF;
+    --steel-blue: #2C3E50;
+    --teal-blue: #4CA1AF;
+
+    /* Logo Red */
+    --logo-red: #D81B3F;
+    --logo-red-light: #fce8ec;
+
+    /* Text Colors */
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #7a86a8;
+    --text-light: #a0aec0;
+
+    /* Border Colors */
+    --border-light: #e2e8f0;
+    --border-medium: #cbd5e0;
+
+    /* Status Colors */
+    --success: #27ae60;
+    --success-bg: #d4edda;
+    --danger: #e74c3c;
+    --danger-bg: #f8d7da;
+    --warning: #f39c12;
+    --warning-bg: #fff3cd;
+    --info: #3498db;
+    --info-bg: #d1ecf1;
+
+    /* ========================================== */
+    /* GRADIENTS (Based on Feedback)             */
+    /* ========================================== */
+
+    /* 1. Tech & Corporate (Buttons, CTAs) */
+    --gradient-tech: linear-gradient(135deg, #1A4B8C 0%, #2B7FCF 100%);
+
+    /* 2. Digital Sunrise (Hero, Headers) */
+    --gradient-sunrise: linear-gradient(135deg, #D81B3F 0%, #1A4B8C 100%);
+
+    /* 3. Metal & Money (Secondary Cards) */
+    --gradient-metal: linear-gradient(135deg, #2C3E50 0%, #4CA1AF 100%);
+
+    /* 4. Brand Gradient (Combined) */
+    --gradient-brand: linear-gradient(135deg, #0E1A3A 0%, #1A4B8C 50%, #2B7FCF 100%);
+
+    /* 5. Red Accent Gradient */
+    --gradient-red: linear-gradient(135deg, #D81B3F 0%, #e84a6a 100%);
+
+    /* 6. Card Header Gradient */
+    --gradient-card-header: linear-gradient(135deg, #f8f9fc 0%, #eef1f8 100%);
+
+    /* Shadows - Light theme */
+    --shadow-sm: 0 2px 8px rgba(14, 26, 58, 0.06);
+    --shadow-md: 0 4px 20px rgba(14, 26, 58, 0.08);
+    --shadow-lg: 0 10px 40px rgba(14, 26, 58, 0.12);
+    --shadow-hover: 0 8px 30px rgba(26, 75, 140, 0.15);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ============================================ */
+/* SCROLLBAR STYLING */
+/* ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--royal-blue);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bright-azure);
+}
+
+/* ============================================ */
+/* NAVBAR - Clean with Deep Navy */
+/* ============================================ */
+.navbar-custom {
+    background: var(--deep-navy);
+    box-shadow: var(--shadow-md);
+    padding: 12px 0;
+    border-bottom: 3px solid var(--logo-red);
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+    font-weight: 600;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.navbar-custom .navbar-brand i {
+    margin-right: 10px;
+    color: var(--logo-red);
+}
+
+.navbar-custom .navbar-brand img {
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 10px rgba(26, 75, 140, 0.2));
+}
+
+.navbar-custom .navbar-brand img:hover {
+    transform: scale(1.05);
+}
+
+.navbar-custom .text-white {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.navbar-custom .text-white i {
+    color: var(--logo-red);
+}
+
+/* ============================================ */
+/* STATS CARDS - Clean White */
+/* ============================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--bg-white);
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-tech);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--royal-blue);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 12px;
+}
+
+.stat-card .stat-icon.blue {
+    background: var(--gradient-tech);
+    box-shadow: 0 0 20px rgba(26, 75, 140, 0.15);
+}
+.stat-card .stat-icon.green {
+    background: var(--gradient-metal);
+    box-shadow: 0 0 20px rgba(76, 161, 175, 0.15);
+}
+.stat-card .stat-icon.orange {
+    background: var(--gradient-red);
+    box-shadow: 0 0 20px rgba(216, 27, 63, 0.12);
+}
+.stat-card .stat-icon.purple {
+    background: var(--gradient-sunrise);
+    box-shadow: 0 0 20px rgba(216, 27, 63, 0.1);
+}
+
+.stat-card .stat-label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 4px;
+}
+
+/* ============================================ */
+/* ACTION BUTTONS - Clean & Professional */
+/* ============================================ */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.action-btn {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    padding: 14px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn i {
+    font-size: 1.4rem;
+    color: var(--royal-blue);
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    background: var(--gradient-tech);
+    border-color: var(--royal-blue);
+    color: white;
+}
+
+.action-btn:hover i {
+    color: white;
+}
+
+/* ============================================ */
+/* TABLE - Clean Professional */
+/* ============================================ */
+.table-container {
+    background: var(--bg-white);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.table-container h4 {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.table-container h4 i {
+    color: var(--royal-blue);
+}
+
+.table thead th {
+    background: var(--bg-light);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid var(--border-light);
+    padding: 12px 15px;
+}
+
+.table tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+    color: var(--text-primary);
+}
+
+.table tbody tr:hover {
+    background: rgba(26, 75, 140, 0.03);
+}
+
+.balance-positive {
+    color: var(--success);
+    font-weight: 600;
+}
+
+/* Search Input */
+#searchInput {
+    background: var(--bg-input);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+#searchInput:focus {
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.1);
+    background: var(--bg-white);
+    color: var(--text-primary);
+}
+
+#searchInput::placeholder {
+    color: var(--text-light);
+}
+
+/* ============================================ */
+/* MODAL - Clean */
+/* ============================================ */
+.modal-content {
+    background: var(--bg-white);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background: var(--gradient-brand);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 18px 24px;
+    border-bottom: 3px solid var(--logo-red);
+}
+
+.modal-header .modal-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 28px 24px;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-light);
+    padding: 16px 24px;
+}
+
+/* ============================================ */
+/* FORM ELEMENTS - Clean */
+/* ============================================ */
+.form-control {
+    background: var(--bg-input);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 0 3px rgba(26, 75, 140, 0.1);
+    background: var(--bg-white);
+    color: var(--text-primary);
+}
+
+.form-control::placeholder {
+    color: var(--text-light);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+/* ============================================ */
+/* BUTTONS */
+/* ============================================ */
+
+/* Primary Button - Tech & Corporate Gradient */
+.btn-gradient {
+    background: var(--gradient-tech);
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    letter-spacing: 0.3px;
+    box-shadow: 0 0 20px rgba(26, 75, 140, 0.15);
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(26, 75, 140, 0.25);
+    color: white;
+}
+
+.btn-gradient:active {
+    transform: translateY(0);
+}
+
+/* Red Accent Button - For Danger Actions */
+.btn-danger-gradient {
+    background: var(--gradient-red);
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    letter-spacing: 0.3px;
+    box-shadow: 0 0 20px rgba(216, 27, 63, 0.15);
+}
+
+.btn-danger-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(216, 27, 63, 0.25);
+    color: white;
+}
+
+/* Metal Button - For Secondary Actions */
+.btn-metal {
+    background: var(--gradient-metal);
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-metal:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* ============================================ */
+/* TOAST NOTIFICATIONS - Clean */
+/* ============================================ */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast-custom {
+    background: var(--bg-white);
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    padding: 14px 22px;
+    border-left: 4px solid var(--royal-blue);
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+    font-weight: 500;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.toast-custom.success {
+    border-left-color: var(--success);
+    background: var(--success-bg);
+}
+.toast-custom.error {
+    border-left-color: var(--danger);
+    background: var(--danger-bg);
+}
+.toast-custom.info {
+    border-left-color: var(--info);
+    background: var(--info-bg);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+@media (max-width: 768px) {
+    .stat-card .stat-value {
+        font-size: 1.3rem;
+    }
+
+    .action-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .navbar-custom .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .toast-custom {
+        min-width: 250px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.1rem;
+    }
+}

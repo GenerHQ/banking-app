@@ -1,0 +1,19 @@
+### 1. Create an account
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "initialDeposit": 1000
+}
+
+### 2. Get all accounts
+POST http://localhost:8080/api/transfer
+Content-Type: application/json
+
+{
+  "fromAccount": "ACC-0000000001",
+  "toAccount": "ACC-0000000002",
+  "amount": 100,
+  "remark": "Test transfer"
+}
