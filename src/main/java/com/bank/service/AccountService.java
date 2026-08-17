@@ -16,12 +16,18 @@ public class AccountService {
 
     @Transactional
     public Account createAccount(String name, double initialDeposit) {
+        // VALIDATE: Account name cannot be blank
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account name is required");
+        }
+
+        // VALIDATE: Initial deposit cannot be negative
         if (initialDeposit < 0) {
             throw new IllegalArgumentException("Initial deposit cannot be negative");
         }
 
         Account account = new Account();
-        account.setAccountName(name);
+        account.setAccountName(name.trim());
         account.setBalance(initialDeposit);
         account.setAccountNumber(generateAccountNumber());
 

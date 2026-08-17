@@ -50,8 +50,14 @@ public class TransactionService {
 
     @Transactional
     public void transfer(String fromAccount, String toAccount, double amount, String remark) {
+        // VALIDATE: Amount must be positive
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
+        }
+
+        // VALIDATE: Source and destination must be different
+        if (fromAccount.equals(toAccount)) {
+            throw new IllegalArgumentException("Source and destination accounts cannot be the same");
         }
 
         Account from = accountService.getAccount(fromAccount);
@@ -60,6 +66,7 @@ public class TransactionService {
         if (from.getBalance() < amount) {
             throw new InsufficientBalanceException(fromAccount, from.getBalance(), amount);
         }
+
 
         // Update balances
         double fromNewBalance = from.getBalance() - amount;

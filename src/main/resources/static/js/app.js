@@ -7,7 +7,7 @@ let modalInstance = null;
 // ============================================
 // INITIALIZE
 // ============================================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     modalInstance = new bootstrap.Modal(document.getElementById('actionModal'));
     setupSearch();
     setupTableButtons();  // ← NEW
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.addEventListener('keyup', function() {
+        searchInput.addEventListener('keyup', function () {
             const searchTerm = this.value.toLowerCase();
             const rows = document.querySelectorAll('#accountsBody tr');
             rows.forEach(row => {
@@ -37,7 +37,7 @@ function setupSearch() {
 function setupTableButtons() {
     // View Account buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const accountNumber = this.getAttribute('data-account');
             viewAccount(accountNumber);
         });
@@ -45,7 +45,7 @@ function setupTableButtons() {
 
     // Transaction History buttons
     document.querySelectorAll('.history-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const accountNumber = this.getAttribute('data-account');
             viewTransactions(accountNumber);
         });
@@ -65,7 +65,7 @@ function openModal(action) {
         modalInstance = new bootstrap.Modal(document.getElementById('actionModal'));
     }
 
-    switch(action) {
+    switch (action) {
         case 'createAccount':
             modalTitle.textContent = '🏦 Create New Account';
             modalBody.innerHTML = `
@@ -182,8 +182,43 @@ function openModal(action) {
 // CREATE ACCOUNT
 function createAccount(event) {
     event.preventDefault();
-    const name = document.getElementById('accName').value;
+
+    // Get form values and trim whitespace
+    const name = document.getElementById('accName').value.trim();
     const deposit = parseFloat(document.getElementById('accDeposit').value);
+
+    // ============================================
+    // FRONTEND VALIDATIONS
+    // ============================================
+
+    // VALIDATION 1: Account name must not be blank
+    if (!name) {
+        showToast('❌ Account name is required', 'error');
+        return;
+    }
+
+    // VALIDATION 2: Account name must be at least 2 characters
+    if (name.length < 2) {
+        showToast('❌ Account name must be at least 2 characters', 'error');
+        return;
+    }
+
+    // VALIDATION 3: Initial deposit must be valid
+    if (isNaN(deposit) || deposit < 0) {
+        showToast('❌ Initial deposit must be zero or greater', 'error');
+        return;
+    }
+
+    // ============================================
+    // PROCEED WITH ACCOUNT CREATION
+    // ============================================
+
+    // Disable submit button to prevent double-click
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Creating...';
+    }
 
     fetch(`${API_BASE}/accounts`, {
         method: 'POST',
@@ -192,22 +227,71 @@ function createAccount(event) {
     })
         .then(response => response.json())
         .then(data => {
+            // Re-enable button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+
             if (data.error) {
-                showToast(data.error, 'error');
+                showToast('❌ ' + data.error, 'error');
             } else {
                 showToast(`✅ Account created! Number: ${data.accountNumber}`, 'success');
                 modalInstance.hide();
                 setTimeout(() => location.reload(), 500);
             }
         })
-        .catch(() => showToast('❌ Failed to create account', 'error'));
+        .catch(error => {
+            // Re-enable button on error
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+            showToast('❌ Failed to create account: ' + error.message, 'error');
+        });
 }
 
 // DEPOSIT
+// DEPOSIT - with validations
 function deposit(event) {
     event.preventDefault();
-    const accountNumber = document.getElementById('depositAccount').value;
+
+    // Get form values and trim whitespace
+    const accountNumber = document.getElementById('depositAccount').value.trim();
     const amount = parseFloat(document.getElementById('depositAmount').value);
+
+    // ============================================
+    // FRONTEND VALIDATIONS
+    // ============================================
+
+    // VALIDATION 1: Account number must not be blank
+    if (!accountNumber) {
+        showToast('❌ Please enter an account number', 'error');
+        return;
+    }
+
+    // VALIDATION 2: Account number format validation (optional)
+    if (!accountNumber.startsWith('ACC-')) {
+        showToast('❌ Invalid account number format. Should start with "ACC-"', 'error');
+        return;
+    }
+
+    // VALIDATION 3: Amount must be valid and greater than zero
+    if (isNaN(amount) || amount <= 0) {
+        showToast('❌ Amount must be greater than zero', 'error');
+        return;
+    }
+
+    // ============================================
+    // PROCEED WITH DEPOSIT
+    // ============================================
+
+    // Disable submit button to prevent double-click
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Processing...';
+    }
 
     fetch(`${API_BASE}/deposit`, {
         method: 'POST',
@@ -216,22 +300,110 @@ function deposit(event) {
     })
         .then(response => response.json())
         .then(data => {
+            // Re-enable button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Deposit';
+            }
+
             if (data.error) {
-                showToast(data.error, 'error');
+                showToast('❌ ' + data.error, 'error');
             } else {
                 showToast(`✅ Deposited ₱${amount.toFixed(2)} successfully!`, 'success');
                 modalInstance.hide();
                 setTimeout(() => location.reload(), 500);
             }
         })
-        .catch(() => showToast('❌ Failed to deposit', 'error'));
+        .catch(error => {
+            // Re-enable button on error
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Deposit';
+            }
+            showToast('❌ Failed to deposit', 'error');
+        });
 }
 
 // WITHDRAW
+// WITHDRAW - with validations
+// WITHDRAW - with validations
 function withdraw(event) {
     event.preventDefault();
-    const accountNumber = document.getElementById('withdrawAccount').value;
+
+    // Get form values and trim whitespace
+    const accountNumber = document.getElementById('withdrawAccount').value.trim();
     const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+    // ============================================
+    // FRONTEND VALIDATIONS
+    // ============================================
+
+    // VALIDATION 1: Account number must not be blank
+    if (!accountNumber) {
+        showToast('❌ Please enter an account number', 'error');
+        return;
+    }
+
+    // VALIDATION 2: Account number format validation (optional)
+    if (!accountNumber.startsWith('ACC-')) {
+        showToast('❌ Invalid account number format. Should start with "ACC-"', 'error');
+        return;
+    }
+
+    // VALIDATION 3: Amount must be valid and greater than zero
+    if (isNaN(amount) || amount <= 0) {
+        showToast('❌ Amount must be greater than zero', 'error');
+        return;
+    }
+
+    // ============================================
+    // CHECK BALANCE FIRST (BONUS FEATURE)
+    // ============================================
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Checking balance...';
+    }
+
+    fetch(`${API_BASE}/account?accountNumber=${accountNumber}`)
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Account not found');
+                });
+            }
+            return response.json();
+        })
+        .then(account => {
+            // Check if sufficient balance
+            if (amount > account.balance) {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Withdraw';
+                }
+                showToast(`❌ Insufficient balance. Available: ₱${account.balance.toFixed(2)}`, 'error');
+                return;
+            }
+
+            // Proceed with withdrawal
+            performWithdrawal(accountNumber, amount, submitBtn);
+        })
+        .catch(error => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Withdraw';
+            }
+            showToast('❌ ' + error.message, 'error');
+        });
+}
+
+// Helper function for withdrawal (separated for clarity)
+function performWithdrawal(accountNumber, amount, submitBtn) {
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Processing...';
+    }
 
     fetch(`${API_BASE}/withdraw`, {
         method: 'POST',
@@ -240,58 +412,103 @@ function withdraw(event) {
     })
         .then(response => response.json())
         .then(data => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Withdraw';
+            }
+
             if (data.error) {
-                showToast(data.error, 'error');
+                showToast('❌ ' + data.error, 'error');
             } else {
                 showToast(`✅ Withdrew ₱${amount.toFixed(2)} successfully!`, 'success');
                 modalInstance.hide();
                 setTimeout(() => location.reload(), 500);
             }
         })
-        .catch(() => showToast('❌ Failed to withdraw', 'error'));
+        .catch(error => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Withdraw';
+            }
+            showToast('❌ Failed to withdraw', 'error');
+        });
 }
 
 // TRANSFER
-// TRANSFER - with duplicate prevention
 function transfer(event) {
     event.preventDefault();
 
-    // Get the submit button
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-
-    // Disable button to prevent double-click
-    submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Processing...';
-
-    const fromAccount = document.getElementById('transferFrom').value;
-    const toAccount = document.getElementById('transferTo').value;
+    // Get form values
+    const fromAccount = document.getElementById('transferFrom').value.trim();
+    const toAccount = document.getElementById('transferTo').value.trim();
     const amount = parseFloat(document.getElementById('transferAmount').value);
     const remark = document.getElementById('transferRemark').value || 'Transfer';
+
+    // ============================================
+    // FRONTEND VALIDATIONS
+    // ============================================
+
+    // VALIDATION 1: Both accounts must be filled
+    if (!fromAccount || !toAccount) {
+        showToast('❌ Please enter both source and destination account numbers', 'error');
+        return;
+    }
+
+    // VALIDATION 2: Source and destination must be different
+    if (fromAccount === toAccount) {
+        showToast('❌ Source and destination accounts cannot be the same', 'error');
+        return;
+    }
+
+    // VALIDATION 3: Amount must be valid and greater than zero
+    if (isNaN(amount) || amount <= 0) {
+        showToast('❌ Amount must be greater than zero', 'error');
+        return;
+    }
+
+    // ============================================
+    // PROCEED WITH TRANSFER
+    // ============================================
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Processing...';
 
     fetch(`${API_BASE}/transfer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fromAccount, toAccount, amount, remark })
     })
-        .then(response => response.json())
-        .then(data => {
-            // Re-enable button
+        .then(response => response.text())
+        .then(text => {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Transfer';
 
-            if (data.error) {
-                showToast(data.error, 'error');
-            } else {
-                showToast(`✅ Transferred ₱${amount.toFixed(2)} successfully!`, 'success');
-                modalInstance.hide();
-                setTimeout(() => location.reload(), 500);
+            // Try to parse as JSON, but it's probably plain text
+            try {
+                const data = JSON.parse(text);
+                if (data.error) {
+                    showToast('❌ ' + data.error, 'error');
+                } else {
+                    showToast('✅ Transfer completed successfully!', 'success');
+                    modalInstance.hide();
+                    setTimeout(() => location.reload(), 500);
+                }
+            } catch {
+                // It's plain text - check response
+                if (text.includes('successful') || text.includes('completed')) {
+                    showToast('✅ Transfer completed successfully!', 'success');
+                    modalInstance.hide();
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    showToast('❌ ' + text, 'error');
+                }
             }
         })
-        .catch(() => {
-            // Re-enable button on error
+        .catch(error => {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Transfer';
-            showToast('❌ Failed to transfer', 'error');
+            showToast('❌ ' + error.message, 'error');
         });
 }
 

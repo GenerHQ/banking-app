@@ -1,4 +1,12 @@
-### 1. Create an account
+### ============================================
+### BANKING API TESTING
+### Base URL: http://localhost:8080/api
+### ============================================
+
+### 1. GET - Get all accounts
+GET http://localhost:8080/api/accounts
+
+### 2. POST - Create a new account
 POST http://localhost:8080/api/accounts
 Content-Type: application/json
 
@@ -7,7 +15,28 @@ Content-Type: application/json
   "initialDeposit": 1000
 }
 
-### 2. Get all accounts
+### 3. GET - Get a specific account
+GET http://localhost:8080/api/account?accountNumber=ACC-0000000001
+
+### 4. POST - Deposit money
+POST http://localhost:8080/api/deposit
+Content-Type: application/json
+
+{
+  "accountNumber": "ACC-0000000001",
+  "amount": 500
+}
+
+### 5. POST - Withdraw money
+POST http://localhost:8080/api/withdraw
+Content-Type: application/json
+
+{
+  "accountNumber": "ACC-0000000001",
+  "amount": 200
+}
+
+### 6. POST - Transfer money
 POST http://localhost:8080/api/transfer
 Content-Type: application/json
 
@@ -17,3 +46,21 @@ Content-Type: application/json
   "amount": 100,
   "remark": "Test transfer"
 }
+
+### 7. GET - Get transaction history
+GET http://localhost:8080/api/transactions?accountNumber=ACC-0000000001
+
+### 8. GET - Get mini statement
+GET http://localhost:8080/api/mini-statement?accountNumber=ACC-0000000001
+
+### 9. POST - Create another account
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "initialDeposit": 500
+}
+
+### 10. GET - Check balance after transfer
+GET http://localhost:8080/api/account?accountNumber=ACC-0000000002

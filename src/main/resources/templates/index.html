@@ -49,23 +49,16 @@
         <div class="col-md-3 col-6">
             <div class="stat-card">
                 <div class="stat-icon green"><i class="fas fa-money-bill-wave"></i></div>
-                <div class="stat-label">Total Balance</div>
+                <div class="stat-label">Total Bank Fund</div>
                 <div class="stat-value">₱<span th:text="${#numbers.formatDecimal(totalBalance, 0, 2)}">0.00</span></div>
             </div>
         </div>
-        <div class="col-md-3 col-6">
-            <div class="stat-card">
-                <div class="stat-icon orange"><i class="fas fa-exchange-alt"></i></div>
-                <div class="stat-label">Transactions</div>
-                <div class="stat-value">0</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="stat-card">
-                <div class="stat-icon purple"><i class="fas fa-clock"></i></div>
-                <div class="stat-label">Last Activity</div>
-                <div class="stat-value" style="font-size:1rem;">Today</div>
-            </div>
+        <div class="col-md-6 col-6">
+            <img th:src="@{/images/wora_tagline.jpg}"
+                 alt="WORA - Write Once, Read Anywhere"
+                 height="175"
+                 width="100%"
+            style="border-radius: 2%">
         </div>
     </div>
 
