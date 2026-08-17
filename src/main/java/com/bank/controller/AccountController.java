@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,7 @@ public class AccountController {
         String remark = (String) request.getOrDefault("remark", "Transfer");
 
         transactionService.transfer(fromAccount, toAccount, amount, remark);
+
         return ResponseEntity.ok("Transfer completed successfully");
     }
 

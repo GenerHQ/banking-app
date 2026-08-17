@@ -5,12 +5,53 @@ const API_BASE = 'http://localhost:8080/api';
 let modalInstance = null;
 
 // ============================================
+// LOADING SPINNER (NEW - Add this section)
+// ============================================
+function showLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'block';
+    }
+}
+
+function hideLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
+}
+
+// ============================================
+// LOADING SPINNER
+// ============================================
+function showLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'block';
+    }
+}
+
+function hideLoading() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
+}
+
+// ============================================
+// CONFIRMATION DIALOG (NEW - Add this)
+// ============================================
+function confirmAction(message) {
+    return confirm(message);
+}
+
+// ============================================
 // INITIALIZE
 // ============================================
 document.addEventListener('DOMContentLoaded', function () {
     modalInstance = new bootstrap.Modal(document.getElementById('actionModal'));
     setupSearch();
-    setupTableButtons();  // ← NEW
+    setupTableButtons();
     console.log('✅ Banking App Frontend Loaded!');
 });
 
@@ -252,7 +293,6 @@ function createAccount(event) {
 }
 
 // DEPOSIT
-// DEPOSIT - with validations
 function deposit(event) {
     event.preventDefault();
 
@@ -283,8 +323,18 @@ function deposit(event) {
     }
 
     // ============================================
+    // CONFIRMATION DIALOG (NEW)
+    // ============================================
+    if (!confirmAction(`⚠️ Are you sure you want to deposit ₱${amount.toFixed(2)} to account ${accountNumber}?`)) {
+        return;  // User cancelled
+    }
+
+    // ============================================
     // PROCEED WITH DEPOSIT
     // ============================================
+
+    // Show loading spinner
+    showLoading();
 
     // Disable submit button to prevent double-click
     const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -300,6 +350,9 @@ function deposit(event) {
     })
         .then(response => response.json())
         .then(data => {
+            // Hide loading spinner
+            hideLoading();
+
             // Re-enable button
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -315,6 +368,9 @@ function deposit(event) {
             }
         })
         .catch(error => {
+            // Hide loading spinner on error
+            hideLoading();
+
             // Re-enable button on error
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -325,8 +381,6 @@ function deposit(event) {
 }
 
 // WITHDRAW
-// WITHDRAW - with validations
-// WITHDRAW - with validations
 function withdraw(event) {
     event.preventDefault();
 
@@ -357,6 +411,13 @@ function withdraw(event) {
     }
 
     // ============================================
+    // CONFIRMATION DIALOG (NEW)
+    // ============================================
+    if (!confirmAction(`⚠️ Are you sure you want to withdraw ₱${amount.toFixed(2)} from account ${accountNumber}?`)) {
+        return;  // User cancelled
+    }
+
+    // ============================================
     // CHECK BALANCE FIRST (BONUS FEATURE)
     // ============================================
 
@@ -365,6 +426,9 @@ function withdraw(event) {
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ Checking balance...';
     }
+
+    // Show loading spinner
+    showLoading();
 
     fetch(`${API_BASE}/account?accountNumber=${accountNumber}`)
         .then(response => {
@@ -376,6 +440,9 @@ function withdraw(event) {
             return response.json();
         })
         .then(account => {
+            // Hide loading spinner after balance check
+            hideLoading();
+
             // Check if sufficient balance
             if (amount > account.balance) {
                 if (submitBtn) {
@@ -390,6 +457,8 @@ function withdraw(event) {
             performWithdrawal(accountNumber, amount, submitBtn);
         })
         .catch(error => {
+            // Hide loading spinner on error
+            hideLoading();
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Withdraw';
@@ -398,12 +467,17 @@ function withdraw(event) {
         });
 }
 
-// Helper function for withdrawal (separated for clarity)
+// ============================================
+// HELPER FUNCTION - PERFORM WITHDRAWAL
+// ============================================
 function performWithdrawal(accountNumber, amount, submitBtn) {
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ Processing...';
     }
+
+    // Show loading spinner
+    showLoading();
 
     fetch(`${API_BASE}/withdraw`, {
         method: 'POST',
@@ -412,6 +486,9 @@ function performWithdrawal(accountNumber, amount, submitBtn) {
     })
         .then(response => response.json())
         .then(data => {
+            // Hide loading spinner
+            hideLoading();
+
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Withdraw';
@@ -426,6 +503,9 @@ function performWithdrawal(accountNumber, amount, submitBtn) {
             }
         })
         .catch(error => {
+            // Hide loading spinner on error
+            hideLoading();
+
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Withdraw';
@@ -466,46 +546,117 @@ function transfer(event) {
         return;
     }
 
-    // ============================================
-    // PROCEED WITH TRANSFER
-    // ============================================
+    // VALIDATION 4: Check if accounts exist (optional - helps user know before submitting)
+    // We'll check both accounts exist before proceeding
 
     const submitBtn = event.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ Processing...';
+    submitBtn.textContent = '⏳ Checking accounts...';
 
-    fetch(`${API_BASE}/transfer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fromAccount, toAccount, amount, remark })
-    })
-        .then(response => response.text())
-        .then(text => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Transfer';
+    // ============================================
+    // CHECK IF BOTH ACCOUNTS EXIST (NEW)
+    // ============================================
+    Promise.all([
+        fetch(`${API_BASE}/account?accountNumber=${fromAccount}`),
+        fetch(`${API_BASE}/account?accountNumber=${toAccount}`)
+    ])
+        .then(responses => {
+            // Check both responses
+            const [fromResponse, toResponse] = responses;
 
-            // Try to parse as JSON, but it's probably plain text
-            try {
-                const data = JSON.parse(text);
-                if (data.error) {
-                    showToast('❌ ' + data.error, 'error');
-                } else {
-                    showToast('✅ Transfer completed successfully!', 'success');
-                    modalInstance.hide();
-                    setTimeout(() => location.reload(), 500);
-                }
-            } catch {
-                // It's plain text - check response
-                if (text.includes('successful') || text.includes('completed')) {
-                    showToast('✅ Transfer completed successfully!', 'success');
-                    modalInstance.hide();
-                    setTimeout(() => location.reload(), 500);
-                } else {
-                    showToast('❌ ' + text, 'error');
-                }
+            if (!fromResponse.ok) {
+                return fromResponse.json().then(data => {
+                    throw new Error(`Source account: ${data.error || 'Account not found'}`);
+                });
             }
+            if (!toResponse.ok) {
+                return toResponse.json().then(data => {
+                    throw new Error(`Destination account: ${data.error || 'Account not found'}`);
+                });
+            }
+            return Promise.all(responses.map(r => r.json()));
+        })
+        .then(accounts => {
+            // Both accounts exist - proceed with transfer
+            const [fromAccountData, toAccountData] = accounts;
+
+            // Check if source has enough balance
+            if (amount > fromAccountData.balance) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Transfer';
+                showToast(`❌ Insufficient balance in source account. Available: ₱${fromAccountData.balance.toFixed(2)}`, 'error');
+                return;
+            }
+
+            // ============================================
+            // CONFIRMATION
+            // ============================================
+            if (!confirmAction(`⚠️ Are you sure you want to transfer ₱${amount.toFixed(2)} from ${fromAccount} to ${toAccount}?`)) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Transfer';
+                return;  // User cancelled
+            }
+
+            // ============================================
+            // PROCEED WITH TRANSFER
+            // ============================================
+            showLoading();
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+
+            fetch(`${API_BASE}/transfer`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fromAccount, toAccount, amount, remark })
+            })
+                .then(response => {
+                    // Try to parse as JSON first
+                    return response.text().then(text => {
+                        try {
+                            const data = JSON.parse(text);
+                            return { ok: response.ok, status: response.status, data: data, text: null };
+                        } catch {
+                            return { ok: response.ok, status: response.status, data: null, text: text };
+                        }
+                    });
+                })
+                .then(result => {
+                    hideLoading();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Transfer';
+
+                    if (!result.ok) {
+                        // Handle error response
+                        if (result.data && result.data.error) {
+                            showToast('❌ ' + result.data.error, 'error');
+                        } else if (result.text) {
+                            showToast('❌ ' + result.text, 'error');
+                        } else {
+                            showToast('❌ Transfer failed. Please try again.', 'error');
+                        }
+                        return;
+                    }
+
+                    // Success - check if data or text
+                    if (result.data && result.data.success === false) {
+                        showToast('❌ ' + (result.data.message || 'Transfer failed'), 'error');
+                        return;
+                    }
+
+                    const successMessage = result.data?.message || result.text || 'Transfer completed successfully';
+                    showToast('✅ ' + successMessage, 'success');
+                    modalInstance.hide();
+                    setTimeout(() => location.reload(), 500);
+                })
+                .catch(error => {
+                    hideLoading();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Transfer';
+                    showToast('❌ ' + error.message, 'error');
+                });
         })
         .catch(error => {
+            // Account check failed
             submitBtn.disabled = false;
             submitBtn.textContent = 'Transfer';
             showToast('❌ ' + error.message, 'error');
