@@ -1,7 +1,7 @@
 // ============================================
 // CONFIGURATION
 // ============================================
-const API_BASE = 'https://your-app.up.railway.app/api';
+const API_BASE = 'http://localhost:8080/api';
 let modalInstance = null;
 
 // ============================================
