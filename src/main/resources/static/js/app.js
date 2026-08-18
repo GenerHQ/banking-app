@@ -713,6 +713,7 @@ function showMiniStatement(event) {
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <span class="fw-bold ${typeClass}">${txn.transactionType}</span>
+                            <small class="d-block text-muted">Ref: ${txn.referenceNumber || 'N/A'}</small>
                             <small class="d-block text-muted">${new Date(txn.createdAt).toLocaleString()}</small>
                         </div>
                         <div class="text-end">
