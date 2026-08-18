@@ -5,23 +5,6 @@ const API_BASE = 'http://localhost:8080/api';
 let modalInstance = null;
 
 // ============================================
-// LOADING SPINNER (NEW - Add this section)
-// ============================================
-function showLoading() {
-    const spinner = document.getElementById('loadingSpinner');
-    if (spinner) {
-        spinner.style.display = 'block';
-    }
-}
-
-function hideLoading() {
-    const spinner = document.getElementById('loadingSpinner');
-    if (spinner) {
-        spinner.style.display = 'none';
-    }
-}
-
-// ============================================
 // LOADING SPINNER
 // ============================================
 function showLoading() {
