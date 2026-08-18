@@ -22,7 +22,7 @@ function hideLoading() {
 }
 
 // ============================================
-// CONFIRMATION DIALOG (NEW - Add this)
+// CONFIRMATION DIALOG
 // ============================================
 function confirmAction(message) {
     return confirm(message);
@@ -56,7 +56,7 @@ function setupSearch() {
 }
 
 // ============================================
-// TABLE BUTTONS (NEW - fixes the onclick issue)
+// TABLE BUTTONS
 // ============================================
 function setupTableButtons() {
     // View Account buttons
@@ -306,7 +306,7 @@ function deposit(event) {
     }
 
     // ============================================
-    // CONFIRMATION DIALOG (NEW)
+    // CONFIRMATION DIALOG
     // ============================================
     if (!confirmAction(`⚠️ Are you sure you want to deposit ₱${amount.toFixed(2)} to account ${accountNumber}?`)) {
         return;  // User cancelled
@@ -394,7 +394,7 @@ function withdraw(event) {
     }
 
     // ============================================
-    // CONFIRMATION DIALOG (NEW)
+    // CONFIRMATION DIALOG
     // ============================================
     if (!confirmAction(`⚠️ Are you sure you want to withdraw ₱${amount.toFixed(2)} from account ${accountNumber}?`)) {
         return;  // User cancelled
@@ -537,7 +537,7 @@ function transfer(event) {
     submitBtn.textContent = '⏳ Checking accounts...';
 
     // ============================================
-    // CHECK IF BOTH ACCOUNTS EXIST (NEW)
+    // CHECK IF BOTH ACCOUNTS EXIST
     // ============================================
     Promise.all([
         fetch(`${API_BASE}/account?accountNumber=${fromAccount}`),

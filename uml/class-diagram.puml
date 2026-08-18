@@ -1,0 +1,256 @@
+@startuml
+' ============================================
+' JAVBANK - CLASS DIAGRAM
+' Wallet Online, Ready Anytime
+' ============================================
+
+title JAVBANK Banking System — Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam packageFontSize 14
+skinparam shadowing false
+skinparam linetype ortho
+skinparam backgroundColor #FFFFFF
+
+' ─────────────────────────────────────────────
+' Package: com.bank.model
+' ─────────────────────────────────────────────
+package "com.bank.model" #FAFAE8 {
+
+    class Account {
+        - id: Long
+        - accountNumber: String
+        - accountName: String
+        - balance: Double
+        - createdAt: LocalDateTime
+        - updatedAt: LocalDateTime
+        + getId(): Long
+        + getAccountNumber(): String
+        + getAccountName(): String
+        + getBalance(): Double
+        + getCreatedAt(): LocalDateTime
+        + getUpdatedAt(): LocalDateTime
+        + setAccountName(String): void
+        + setBalance(Double): void
+        + setAccountNumber(String): void
+        + onCreate(): void
+        + onUpdate(): void
+    }
+
+    class Transaction {
+        - id: Long
+        - accountNumber: String
+        - referenceNumber: String
+        - transactionType: TransactionType
+        - amount: Double
+        - balanceAfter: Double
+        - remarks: String
+        - createdAt: LocalDateTime
+        + getId(): Long
+        + getAccountNumber(): String
+        + getReferenceNumber(): String
+        + getTransactionType(): TransactionType
+        + getAmount(): Double
+        + getBalanceAfter(): Double
+        + getRemarks(): String
+        + getCreatedAt(): LocalDateTime
+        + setAccountNumber(String): void
+        + setReferenceNumber(String): void
+        + setTransactionType(TransactionType): void
+        + setAmount(Double): void
+        + setBalanceAfter(Double): void
+        + setRemarks(String): void
+        + onCreate(): void
+        - generateReferenceNumber(): String
+    }
+
+    enum TransactionType {
+        DEPOSIT
+        WITHDRAW
+        TRANSFER_IN
+        TRANSFER_OUT
+        + getDisplayName(): String
+    }
+
+    Transaction --> TransactionType : uses
+    Transaction --> Account : references
+}
+
+' ─────────────────────────────────────────────
+' Package: com.bank.repository
+' ─────────────────────────────────────────────
+package "com.bank.repository" #EAF4FF {
+
+    interface AccountRepository <<interface>> {
+        + findAll(): List<Account>
+        + findByAccountNumber(String): Optional<Account>
+        + existsByAccountNumber(String): boolean
+        + save(Account): Account
+        + count(): long
+    }
+
+    interface TransactionRepository <<interface>> {
+        + findAll(): List<Transaction>
+        + findByAccountNumberOrderByCreatedAtDesc(String): List<Transaction>
+        + findRecentTransactions(String): List<Transaction>
+        + save(Transaction): Transaction
+    }
+
+    AccountRepository ..> Account
+    TransactionRepository ..> Transaction
+}
+
+' ─────────────────────────────────────────────
+' Package: com.bank.service
+' ─────────────────────────────────────────────
+package "com.bank.service" #F0FFE8 {
+
+    class AccountService {
+        - accountRepository: AccountRepository
+        + createAccount(String, double): Account
+        + getAccount(String): Account
+        + getAllAccounts(): List<Account>
+        + updateBalance(String, double): void
+        - generateAccountNumber(): String
+    }
+
+    class TransactionService {
+        - transactionRepository: TransactionRepository
+        - accountService: AccountService
+        + deposit(String, double): Transaction
+        + withdraw(String, double): Transaction
+        + transfer(String, String, double, String): void
+        + getTransactionHistory(String): List<Transaction>
+        + getMiniStatement(String): List<Transaction>
+        - saveTransaction(String, TransactionType, double, double, String): Transaction
+    }
+
+    AccountService --> AccountRepository
+    TransactionService --> AccountRepository
+    TransactionService --> TransactionRepository
+    TransactionService --> AccountService
+    AccountService --> Account
+    TransactionService --> Transaction
+}
+
+' ─────────────────────────────────────────────
+' Package: com.bank.controller
+' ─────────────────────────────────────────────
+package "com.bank.controller" #D4E6FF {
+
+    class AccountController {
+        - accountService: AccountService
+        - transactionService: TransactionService
+        + getAllAccounts(): ResponseEntity<List<Account>>
+        + getAccount(String): ResponseEntity<Account>
+        + createAccount(Map): ResponseEntity<Account>
+        + deposit(Map): ResponseEntity<Transaction>
+        + withdraw(Map): ResponseEntity<Transaction>
+        + transfer(Map): ResponseEntity<String>
+        + getTransactions(String): ResponseEntity<List<Transaction>>
+        + getMiniStatement(String): ResponseEntity<List<Transaction>>
+    }
+
+    class ViewController {
+        - accountService: AccountService
+        + index(Model): String
+    }
+
+    AccountController --> AccountService
+    AccountController --> TransactionService
+    ViewController --> AccountService
+}
+
+' ─────────────────────────────────────────────
+' Package: com.bank.exception
+' ─────────────────────────────────────────────
+package "com.bank.exception" #FFF5E8 {
+
+    class AccountNotFoundException {
+        + AccountNotFoundException(String)
+    }
+
+    class InsufficientBalanceException {
+        - accountNumber: String
+        - availableBalance: Double
+        - requestedAmount: Double
+        + InsufficientBalanceException(String, double, double)
+        + getAccountNumber(): String
+        + getAvailableBalance(): Double
+        + getRequestedAmount(): Double
+    }
+
+    class GlobalExceptionHandler {
+        + handleAccountNotFound(AccountNotFoundException): ResponseEntity<Map>
+        + handleInsufficientBalance(InsufficientBalanceException): ResponseEntity<Map>
+        + handleIllegalArgument(IllegalArgumentException): ResponseEntity<Map>
+        + handleGenericException(Exception): ResponseEntity<Map>
+    }
+
+    AccountNotFoundException --|> RuntimeException
+    InsufficientBalanceException --|> RuntimeException
+}
+
+' ─────────────────────────────────────────────
+' Package: com.bank
+' ─────────────────────────────────────────────
+package "com.bank" #EFEFEF {
+
+    class BankingAppApplication {
+        + main(String[]): void
+    }
+
+    BankingAppApplication --> AccountController
+    BankingAppApplication --> ViewController
+}
+
+' ─────────────────────────────────────────────
+' RELATIONSHIPS
+' ─────────────────────────────────────────────
+AccountService ..> AccountNotFoundException : throws
+TransactionService ..> AccountNotFoundException : throws
+TransactionService ..> InsufficientBalanceException : throws
+
+AccountController ..> GlobalExceptionHandler : uses
+ViewController ..> GlobalExceptionHandler : uses
+
+' ─────────────────────────────────────────────
+' LAYER NOTES
+' ─────────────────────────────────────────────
+note top of AccountController
+    <b>REST API Layer</b>
+    Handles HTTP requests
+    Returns JSON responses
+    @RestController
+end note
+
+note top of AccountService
+    <b>Business Logic Layer</b>
+    Contains business rules
+    Transactional operations
+    @Service
+end note
+
+note top of AccountRepository
+    <b>Data Access Layer</b>
+    JPA Repository
+    Database operations
+    @Repository
+end note
+
+note top of Account
+    <b>Entity Layer</b>
+    Maps to database tables
+    JPA Annotations
+    @Entity
+end note
+
+note top of GlobalExceptionHandler
+    <b>Exception Layer</b>
+    Global error handling
+    User-friendly responses
+    @RestControllerAdvice
+end note
+
+@enduml

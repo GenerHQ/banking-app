@@ -36,7 +36,7 @@ public class AccountService {
 
     public Account getAccount(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountNotFoundException(accountNumber));  // ← Changed
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
     }
 
     public List<Account> getAllAccounts() {

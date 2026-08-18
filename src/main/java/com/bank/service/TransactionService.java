@@ -67,7 +67,6 @@ public class TransactionService {
             throw new InsufficientBalanceException(fromAccount, from.getBalance(), amount);
         }
 
-
         // Update balances
         double fromNewBalance = from.getBalance() - amount;
         double toNewBalance = to.getBalance() + amount;
